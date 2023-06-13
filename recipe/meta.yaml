@@ -1,5 +1,5 @@
 {% set name = "pixi" %}
-{% set version = "0.0.1" %}
+{% set version = "0.0.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 4831a8d8e627818f101e7013386beb8b7674e4fcf57440f83b630c7e048ddf5d
+  sha256: 87acfd77e794457aec6de1d7a167c06b71b6f1558c954b352a6a55bcab3a012e
 
 build:
   script:
@@ -49,9 +49,9 @@ about:
     pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
 
     pixi provides all developers the exceptional experience that is usually found with package managers like cargo or yarn but for any language.
-    
+
     # Highlights
-    
+
     - Support for multiple languages like Python, C++ and R using Conda packages
     - All OS's: Linux, Windows, macOS (including Apple Silicon)
     - A lockfile is always included and always up-to-date.
