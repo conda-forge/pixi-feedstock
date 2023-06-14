@@ -22,6 +22,7 @@ requirements:
     # to compile the libsolv parts
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
     - cmake
     - make  # [unix]
   host:
