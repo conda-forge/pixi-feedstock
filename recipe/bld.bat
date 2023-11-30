@@ -1,3 +1,4 @@
+set CARGO_HOME=D:\cargo
 cargo install --locked --bins --root %PREFIX% --path .
 if %errorlevel% NEQ 0 exit /b %errorlevel%
 cargo-bundle-licenses --format yaml --output %SRC_DIR%/THIRDPARTY.yml
