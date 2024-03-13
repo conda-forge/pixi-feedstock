@@ -15,6 +15,7 @@ build:
   # somewhere to make old packages installable. In other words, conda-build finds a false-positive here.
   detect_binary_files_with_prefix: false
 
+
 requirements:
   build:
     - {{ compiler('rust') }}
@@ -27,6 +28,7 @@ requirements:
     - make  # [unix]
   host:
     - openssl  # [linux]
+    - libgit2  # [win]
 
 test:
   commands:
