@@ -1,5 +1,5 @@
 {% set name = "pixi" %}
-{% set version = "0.17.1" %}
+{% set version = "0.18.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3024d5bb85ce882c71fce449c20fcc66c47d5d6547c9a79873769cea82baa25b
+  sha256: d5626ab3dcaaef741b97ce57268cd5d7fab74fba73ab31ac21d32dada60e8025
 
 build:
-  number: 1
+  number: 0
   # disable binary prefix detection, because rattler-build encodes the old `anaconda1anaconda2anaconda3` prefix
   # somewhere to make old packages installable. In other words, conda-build finds a false-positive here.
   detect_binary_files_with_prefix: false
