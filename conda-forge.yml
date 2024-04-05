@@ -1,4 +1,5 @@
-automerge: 'version'
+bot:
+  automerge: 'version'
 build_platform:
   linux_aarch64: linux_64
   osx_arm64: osx_64
