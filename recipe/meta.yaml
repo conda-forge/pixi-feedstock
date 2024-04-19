@@ -1,5 +1,5 @@
 {% set name = "pixi" %}
-{% set version = "0.19.1" %}
+{% set version = "0.20.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 94b745a46a40c52e087b422db4cb7f1c22711c4e7b8211e8e10fbc9d90a810d5
+  sha256: 58c8ac8010c248c18ec1e68777ae48aba6bc54876a82f76eba9addff7169be4c
 
 build:
   number: 0
@@ -22,6 +22,7 @@ requirements:
     - cargo-bundle-licenses
     # to compile the libsolv parts
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - pkg-config
     - cmake
