@@ -14,6 +14,7 @@ pixi is a cross-platform, multi-language package manager and workflow tool build
 pixi provides all developers the exceptional experience that is usually found with package managers like cargo or yarn but for any language.
 
 
+
 - Support for multiple languages like Python, C++ and R using Conda packages
 - All OS's: Linux, Windows, macOS (including Apple Silicon)
 - A lockfile is always included and always up-to-date.
@@ -207,7 +208,4 @@ Feedstock Maintainers
 * [@ruben-arts](https://github.com/ruben-arts/)
 * [@tdejager](https://github.com/tdejager/)
 * [@wolfv](https://github.com/wolfv/)
-
-
-<!-- dummy commit to enable rerendering -->
 
