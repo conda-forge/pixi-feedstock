@@ -23,7 +23,7 @@ export CARGO_PROFILE_RELEASE_STRIP='symbols'
 
 # Optimize the binary for size. This reduces the filesize at the cost of a slower binary.
 # Options are 's' (size), 'z' (size and speed), '0-3' (speed, 0 being no optimization, 3 being max optimization)
-export CARGO_PROFILE_OPT_LEVEL='s'
+export CARGO_PROFILE_OPT_LEVEL='z'
 
 cargo install --locked --bins --root ${PREFIX} --path .
 cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml
