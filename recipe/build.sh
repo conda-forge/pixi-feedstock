@@ -13,10 +13,10 @@ export OPENSSL_DIR=$PREFIX
 # binary size.
 export CARGO_PROFILE_RELEASE_LTO='true'
 
-# Use a single code gen unit, this effectively disables parallel linking but ensures that everything is linked
-# together in a single unit which reduces the file-size at the cost of link time.
+# Using less then default code units, this effectively lowers parallel linking but ensures that everything is linked
+# together in a smaller amount of units which reduces the file-size at the cost of link time.
 # Default for a release build is 16
-export CARGO_PROFILE_RELEASE_CODEGEN_UNITS='1'
+export CARGO_PROFILE_RELEASE_CODEGEN_UNITS='4'
 
 # Strip the binaries. This reduces the filesize of the final release.
 export CARGO_PROFILE_RELEASE_STRIP='symbols'
