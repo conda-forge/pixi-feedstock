@@ -1,5 +1,5 @@
 {% set name = "pixi" %}
-{% set version = "0.26.1" %}
+{% set version = "0.27.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: f432eed9e0206d87ea548ad313b274874f4a0e8f499478597a197e0c84372b1d
+  sha256: cbda3ffc597289f5f031a30c854e74da0c4d31993ef9398868c73078fca6c452
 
 build:
   number: 0
