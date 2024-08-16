@@ -19,14 +19,8 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
-    - cargo-bundle-licenses
-    # to compile the libsolv parts
-    - {{ compiler('c') }}
     - {{ stdlib("c") }}
-    - {{ compiler('cxx') }}
-    - pkg-config
-    - cmake
-    - make  # [unix]
+    - cargo-bundle-licenses
   host:
     - openssl  # [linux]
     - libgit2  # [win]

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
 export OPENSSL_DIR=$PREFIX
-cargo install --locked --bins --root ${PREFIX} --path .
+cargo install --locked --bins --root ${PREFIX} --path . --no-track
 cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml
-rm $PREFIX/.crates2.json
-rm $PREFIX/.crates.toml
