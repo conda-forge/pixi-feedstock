@@ -1,3 +1,8 @@
 # We need fmemopen in libsolv which became available in 10.13
 c_stdlib_version:          # [osx and x86_64]
   - "10.13"                # [osx and x86_64]
+
+c_compiler_version:        # [osx]
+  - "16"                   # [osx]
+cxx_compiler_version:      # [osx]
+  - "16"                   # [osx]
