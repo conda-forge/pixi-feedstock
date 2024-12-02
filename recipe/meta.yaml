@@ -1,15 +1,18 @@
 {% set name = "pixi" %}
-{% set version = "0.38.0" %}
+{% set version = "0.39.0" %}
 
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-source:
-  url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3de2246884c17ae097c8224cb0cf6ef0a2c10e766d1929e5e56934f8c5381d6a
+# source:
+#   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
+#   sha256: 3de2246884c17ae097c8224cb0cf6ef0a2c10e766d1929e5e56934f8c5381d6a
 
+source:
+  git_url: https://github.com/ruben-arts/pixi.git
+  git_rev: 3a9e06d96534669f3bee99bd816e60a7a889ebb3
 
 build:
   number: 0
@@ -36,6 +39,8 @@ requirements:
 test:
   commands:
     - pixi --help
+    - pixi global install --environment test-python --expose test-pixi-python=python python==3.12
+    - ~/.pixi/bin/test-pixi-python --version
 
 about:
   home: https://github.com/prefix-dev/pixi
