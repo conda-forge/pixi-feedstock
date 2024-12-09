@@ -12,7 +12,7 @@ package:
 
 source:
   git_url: https://github.com/ruben-arts/pixi.git
-  git_rev: 3a9e06d96534669f3bee99bd816e60a7a889ebb3
+  git_rev: 342c92e5dd5a6cdd8f5723c61b0013a2e6bd382d
 
 build:
   number: 0
