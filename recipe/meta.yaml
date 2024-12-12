@@ -13,7 +13,7 @@ package:
 
 source:
   git_url: https://github.com/ruben-arts/pixi.git
-  git_rev: ba4a220bb93bfa369457d2680cc9543aadb8da24
+  git_rev: fix/trampoline
 
 build:
   number: 0
