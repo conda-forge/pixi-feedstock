@@ -7,9 +7,8 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: bad86e42e692493e6de33026ecc835da2877d8796a30d4ed4da480e203ccb7f4
-
+  git_url: https://github.com/ruben-arts/pixi.git
+  git_rev: fix/ppc_rename
 
 build:
   number: 0
@@ -36,6 +35,8 @@ requirements:
 test:
   commands:
     - pixi --help
+    - pixi global install --environment test-python --expose test-pixi-python=python python==3.12
+    - ~/.pixi/bin/test-pixi-python --version
 
 about:
   home: https://github.com/prefix-dev/pixi
