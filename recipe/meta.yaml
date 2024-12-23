@@ -8,7 +8,7 @@ package:
 
 source:
   git_url: https://github.com/ruben-arts/pixi.git
-  git_rev: fix/ppc_rename
+  git_rev: fix/trampoline_name_ppc
 
 build:
   number: 0
