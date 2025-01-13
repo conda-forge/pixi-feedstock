@@ -9,7 +9,7 @@ channel_targets:
 cxx_compiler:
 - vs2019
 libgit2:
-- '1.8'
+- '1.9'
 rust_compiler:
 - rust
 target_platform:
