@@ -1,44 +1,47 @@
-{% set name = "pixi" %}
-{% set version = "0.40.1" %}
+schema_version: 1
 
+context:
+  name: pixi
+  version: 0.40.1
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: ${{ name|lower }}
+  version: ${{ version }}
 
 source:
-  url: https://github.com/prefix-dev/pixi/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
   sha256: aee2dce1e1b3ee8866decd738397d3568fa1479837e07e578f5afffe009f6c7f
 
-
 build:
-  number: 0
   # disable binary prefix detection, because rattler-build encodes the old `anaconda1anaconda2anaconda3` prefix
   # somewhere to make old packages installable. In other words, conda-build finds a false-positive here.
-  detect_binary_files_with_prefix: false
-
+  number: 1
+  prefix_detection:
+    ignore_binary_files: false
 
 requirements:
   build:
-    - {{ compiler('rust') }}
+    - ${{ compiler('rust') }}
     - cargo-bundle-licenses
     # to compile the libsolv parts
-    - {{ compiler('c') }}
-    - {{ stdlib("c") }}
-    - {{ compiler('cxx') }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
     - pkg-config
     - cmake
-    - make  # [unix]
+    - if: unix
+      then: make
   host:
-    - openssl  # [linux]
-    - libgit2  # [win]
+    - if: linux
+      then: openssl
+    - if: win
+      then: libgit2
 
-test:
-  commands:
-    - pixi --help
+tests:
+  - script:
+      - pixi --help
 
 about:
-  home: https://github.com/prefix-dev/pixi
   summary: pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
   description: |
     pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
@@ -58,6 +61,7 @@ about:
   license_file:
     - LICENSE
     - THIRDPARTY.yml
+  homepage: https://github.com/prefix-dev/pixi
 
 extra:
   recipe-maintainers:
