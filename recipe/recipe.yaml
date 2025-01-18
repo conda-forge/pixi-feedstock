@@ -13,11 +13,7 @@ source:
   sha256: 90015ae7a3dfa2458f44e1867fff14215e4b1d21de1f3c0da85b89f5728cbe42
 
 build:
-  # disable binary prefix detection, because rattler-build encodes the old `anaconda1anaconda2anaconda3` prefix
-  # somewhere to make old packages installable. In other words, conda-build finds a false-positive here.
   number: 0
-  prefix_detection:
-    ignore_binary_files: false
 
 requirements:
   build:
