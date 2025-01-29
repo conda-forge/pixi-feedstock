@@ -13,10 +13,23 @@ source:
   sha256: b7cff3f4dd3a1e164f1088d07fe4d20b5830855d481b0811d979074ab0d3bc08
 
 build:
-  number: 0
+  number: 1
+
+  script:
+    env:
+      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
+      OPENSSL_DIR: ${{ prefix }}
+    interpreter: nu
+    content: |
+        echo test $env.JEMALLOC_SYS_WITH_LG_PAGE
+        cargo install --locked --bins --root $env.PREFIX --path . --no-track
+        cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
+
+
 
 requirements:
   build:
+    - nushell
     - ${{ compiler('rust') }}
     - cargo-bundle-licenses
     # to compile the libsolv parts
@@ -65,3 +78,4 @@ extra:
     - baszalmstra
     - tdejager
     - ruben-arts
+    - Hofer-Julian

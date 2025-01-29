@@ -17,7 +17,6 @@ rattler-build = "*"
 
 [tasks]
 inspect-all = "inspect_artifacts --all-packages"
-build = "rattler-build build --recipe recipe"
 "build-linux_64_" = "rattler-build build --recipe recipe -m .ci_support/linux_64_.yaml"
 "inspect-linux_64_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_.yaml"
 "build-linux_aarch64_" = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_.yaml"
