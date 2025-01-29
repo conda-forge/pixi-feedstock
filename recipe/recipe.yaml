@@ -21,7 +21,7 @@ build:
       OPENSSL_DIR: ${{ prefix }}
     interpreter: nu
     content: |
-        echo $env.JEMALLOC_SYS_WITH_LG_PAGE
+        echo test $env.JEMALLOC_SYS_WITH_LG_PAGE
         cargo install --locked --bins --root $env.PREFIX --path . --no-track
         cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
