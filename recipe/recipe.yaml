@@ -19,8 +19,22 @@ build:
   prefix_detection:
     ignore_binary_files: false
 
+  script:
+    env:
+      JEMALLOC_SYS_WITH_LG_PAGE: ${{ 16 if target_platform == "linux-aarch64" else 0 }}
+      OPENSSL_DIR: ${{ prefix }}
+    interpreter: nu
+    content: |
+        cargo install --locked --bins --root ${PREFIX} --path .
+        cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml
+        rm $PREFIX/.crates2.json
+        rm $PREFIX/.crates.toml
+
+
+
 requirements:
   build:
+    - nushell
     - ${{ compiler('rust') }}
     - cargo-bundle-licenses
     # to compile the libsolv parts
