@@ -13,10 +13,23 @@ source:
   sha256: 8904caca64da9b3197fc2c6db31bbdd0fc1fe0ddd30a6af342618bd61ab291c9
 
 build:
-  number: 0
+  number: 1
+
+  script:
+    env:
+      # This env var  specifies the base 2 log of the allocator page size
+      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
+      OPENSSL_DIR: ${{ prefix }}
+    interpreter: nu
+    content: |
+        cargo install --locked --bins --root $env.PREFIX --path . --no-track
+        cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
+
+
 
 requirements:
   build:
+    - nushell
     - ${{ compiler('rust') }}
     - cargo-bundle-licenses
     # to compile the libsolv parts
@@ -65,3 +78,4 @@ extra:
     - baszalmstra
     - tdejager
     - ruben-arts
+    - Hofer-Julian
