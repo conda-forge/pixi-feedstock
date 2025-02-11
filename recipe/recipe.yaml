@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pixi
-  version: "0.41.1"
+  version: "0.41.2"
 
 package:
   name: ${{ name|lower }}
@@ -10,10 +10,10 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: a5fe99433eb7ff30a3d35eabe66aeee01666bf7313e4933cce5ab55ee0e5e264
+  sha256: 0c8a35ef80cc43af543fd3ee439471d200da93a36d47fdeb5704e913e249fc1f
 
 build:
-  number: 1
+  number: 0
 
   script:
     env:
@@ -22,8 +22,8 @@ build:
       OPENSSL_DIR: ${{ prefix }}
     interpreter: nu
     content: |
-        cargo install --locked --bins --root $env.PREFIX --path . --no-track
-        cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
+      cargo install --locked --bins --root $env.PREFIX --path . --no-track
+      cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
 
 
