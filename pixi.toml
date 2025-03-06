@@ -4,11 +4,11 @@
 
 [project]
 name = "pixi-feedstock"
-version = "3.45.4"
+version = "3.46.1"
 description = "Pixi configuration for conda-forge/pixi-feedstock"
 authors = ["@conda-forge/pixi"]
 channels = ["conda-forge"]
-platforms = ['linux-64', 'osx-64', 'win-64']
+platforms = ["linux-64", "osx-64", "win-64"]
 
 [dependencies]
 conda-build = ">=24.1"
