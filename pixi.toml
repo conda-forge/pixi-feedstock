@@ -2,9 +2,12 @@
 # update the conda-forge.yml and/or the recipe/meta.yaml.
 # -*- mode: toml -*-
 
+#                             VVVVVV  minimum `pixi` version
+"$schema" = "https://pixi.sh/v0.36.0/schema/manifest/schema.json"
+
 [project]
 name = "pixi-feedstock"
-version = "3.47.0"
+version = "3.47.1"  # conda-smithy version used to generate this file
 description = "Pixi configuration for conda-forge/pixi-feedstock"
 authors = ["@conda-forge/pixi"]
 channels = ["conda-forge"]
@@ -16,29 +19,65 @@ conda-forge-ci-setup = "4.*"
 rattler-build = "*"
 
 [tasks]
-inspect-all = "inspect_artifacts --all-packages"
-build = "rattler-build build --recipe recipe"
-"build-linux_64_" = "rattler-build build --recipe recipe -m .ci_support/linux_64_.yaml"
-"inspect-linux_64_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_.yaml"
-"build-linux_aarch64_" = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_.yaml"
-"inspect-linux_aarch64_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_.yaml"
-"build-linux_ppc64le_" = "rattler-build build --recipe recipe -m .ci_support/linux_ppc64le_.yaml"
-"inspect-linux_ppc64le_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_ppc64le_.yaml"
-"build-osx_64_" = "rattler-build build --recipe recipe -m .ci_support/osx_64_.yaml"
-"inspect-osx_64_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/osx_64_.yaml"
-"build-osx_arm64_" = "rattler-build build --recipe recipe -m .ci_support/osx_arm64_.yaml"
-"inspect-osx_arm64_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/osx_arm64_.yaml"
-"build-win_64_" = "rattler-build build --recipe recipe -m .ci_support/win_64_.yaml"
-"inspect-win_64_" = "inspect_artifacts --recipe-dir recipe -m .ci_support/win_64_.yaml"
+[tasks.inspect-all]
+cmd = "inspect_artifacts --all-packages"
+description = "List contents of all packages found in rattler-build build directory."
+[tasks.build]
+cmd = "rattler-build build --recipe recipe"
+description = "Build pixi-feedstock directly (without setup scripts), no particular variant specified"
+[tasks."build-linux_64_"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_64_.yaml"
+description = "Build pixi-feedstock with variant linux_64_ directly (without setup scripts)"
+[tasks."inspect-linux_64_"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_64_.yaml"
+description = "List contents of pixi-feedstock packages built for variant linux_64_"
+[tasks."build-linux_aarch64_"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_aarch64_.yaml"
+description = "Build pixi-feedstock with variant linux_aarch64_ directly (without setup scripts)"
+[tasks."inspect-linux_aarch64_"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_.yaml"
+description = "List contents of pixi-feedstock packages built for variant linux_aarch64_"
+[tasks."build-linux_ppc64le_"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/linux_ppc64le_.yaml"
+description = "Build pixi-feedstock with variant linux_ppc64le_ directly (without setup scripts)"
+[tasks."inspect-linux_ppc64le_"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_ppc64le_.yaml"
+description = "List contents of pixi-feedstock packages built for variant linux_ppc64le_"
+[tasks."build-osx_64_"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/osx_64_.yaml"
+description = "Build pixi-feedstock with variant osx_64_ directly (without setup scripts)"
+[tasks."inspect-osx_64_"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/osx_64_.yaml"
+description = "List contents of pixi-feedstock packages built for variant osx_64_"
+[tasks."build-osx_arm64_"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/osx_arm64_.yaml"
+description = "Build pixi-feedstock with variant osx_arm64_ directly (without setup scripts)"
+[tasks."inspect-osx_arm64_"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/osx_arm64_.yaml"
+description = "List contents of pixi-feedstock packages built for variant osx_arm64_"
+[tasks."build-win_64_"]
+cmd = "rattler-build build --recipe recipe -m .ci_support/win_64_.yaml"
+description = "Build pixi-feedstock with variant win_64_ directly (without setup scripts)"
+[tasks."inspect-win_64_"]
+cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/win_64_.yaml"
+description = "List contents of pixi-feedstock packages built for variant win_64_"
 
 [feature.smithy.dependencies]
 conda-smithy = "*"
-
-[feature.smithy.tasks]
-build-locally = "python ./build-locally.py"
-smithy = "conda-smithy"
-rerender = "conda-smithy rerender"
-lint = "conda-smithy lint recipe"
+[feature.smithy.tasks.build-locally]
+cmd = "python ./build-locally.py"
+description = "Build packages locally using the same setup scripts used in conda-forge's CI"
+[feature.smithy.tasks.smithy]
+cmd = "conda-smithy"
+description = "Run conda-smithy. Pass necessary arguments."
+[feature.smithy.tasks.rerender]
+cmd = "conda-smithy rerender"
+description = "Rerender the feedstock."
+[feature.smithy.tasks.lint]
+cmd = "conda-smithy lint --conda-forge recipe"
+description = "Lint the feedstock recipe"
 
 [environments]
 smithy = ["smithy"]
+# This is a copy of default, to be enabled by build_steps.sh during Docker builds
+# __PLATFORM_SPECIFIC_ENV__ = []
