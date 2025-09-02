@@ -20,9 +20,11 @@ build:
       # This env var  specifies the base 2 log of the allocator page size
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
       OPENSSL_DIR: ${{ prefix }}
+      CARGO_PROFILE_RELEASE_STRIP: symbols
+      CARGO_PROFILE_RELEASE_LTO: fat
     interpreter: nu
     content: |
-      cargo install --locked --bins --root $env.PREFIX --path . --no-track
+      cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
 
@@ -38,6 +40,7 @@ requirements:
     - ${{ compiler('cxx') }}
     - pkg-config
     - cmake
+    - cargo-auditable
     - if: unix
       then: make
   host:
