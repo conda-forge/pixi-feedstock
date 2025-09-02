@@ -21,7 +21,6 @@ build:
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
       OPENSSL_DIR: ${{ prefix }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      CARGO_PROFILE_RELEASE_LTO: fat
     interpreter: nu
     content: |
       cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
