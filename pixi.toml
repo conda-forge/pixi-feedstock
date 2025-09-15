@@ -7,7 +7,7 @@
 
 [project]
 name = "pixi-feedstock"
-version = "3.52.1"  # conda-smithy version used to generate this file
+version = "3.52.2"  # conda-smithy version used to generate this file
 description = "Pixi configuration for conda-forge/pixi-feedstock"
 authors = ["@conda-forge/pixi"]
 channels = ["conda-forge"]
