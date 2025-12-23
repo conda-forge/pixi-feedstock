@@ -19,15 +19,13 @@ build:
     env:
       # This env var  specifies the base 2 log of the allocator page size
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
-      OPENSSL_DIR: ${{ prefix }}
-      OPENSSL_LIB_DIR: ${{ prefix }}/lib
-      OPENSSL_INCLUDE_DIR: ${{ prefix }}/include
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
       # Use native-tls on powerpc64le because rustls (default) uses the ring crate
       # which doesn't support powerpc64le due to unsupported relocations
       if $env.target_platform == "linux-ppc64le" {
+        $env.OPENSSL_DIR = $env.PREFIX
         cargo install --locked --root $env.PREFIX --no-track --path crates/pixi --no-default-features --features native-tls
       } else {
         cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
