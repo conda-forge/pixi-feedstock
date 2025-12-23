@@ -26,6 +26,8 @@ build:
       # which doesn't support powerpc64le due to unsupported relocations
       if $env.target_platform == "linux-ppc64le" {
         $env.OPENSSL_DIR = $env.PREFIX
+        $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_LINKER="$env.CC"
+        $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS="$env.RUSTFLAGS -C link-arg=-fuse-ld=bfd"
         cargo install --locked --root $env.PREFIX --no-track --path crates/pixi --no-default-features --features native-tls
       } else {
         cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
