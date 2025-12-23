@@ -23,7 +23,15 @@ build:
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
-      cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
+      # Use native-tls on powerpc64le because rustls (default) uses the ring crate
+      # which doesn't support powerpc64le due to unsupported relocations
+      let features = if $env.target_platform == "linux-ppc64le" {
+        "--no-default-features --features native-tls"
+      } else {
+        ""
+      }
+
+      cargo install --locked --root $env.PREFIX --no-track --path crates/pixi $features
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
 
