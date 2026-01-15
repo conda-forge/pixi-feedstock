@@ -23,6 +23,10 @@ build:
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
+      if $nu.os-info.name == "linux" {
+        # This flag is needed for tree-sitter on linux
+        $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
+      }
       cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
