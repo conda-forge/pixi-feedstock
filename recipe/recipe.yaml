@@ -18,7 +18,7 @@ build:
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
-      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
+      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
