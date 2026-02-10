@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pixi
-  version: "0.63.0"
+  version: "0.63.2"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 795d6f48279d800507dd8a54f7c6c214c72e8ec3fbfd7bd41a0c935c775a7fed
+  sha256: 197d576d68e3bf1b0545744a98974b4b519393f2b223b7fb7270015f97381e83
 
 build:
   number: 0
@@ -18,7 +18,7 @@ build:
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
-      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
+      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
