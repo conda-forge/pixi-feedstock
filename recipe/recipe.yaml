@@ -27,7 +27,7 @@ build:
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
-      cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
+      cargo auditable install --locked --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
 
