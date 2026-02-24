@@ -26,7 +26,7 @@ build:
 
       if $nu.os-info.name == "windows" {
         # Set temp dir for cargo to avoid long path issues on windows while cloning the git repos.
-        $env.CARGO_TARGET_DIR = ($nu.temp-path | path join "cb")
+        $env.CARGO_TARGET_DIR = ($nu.temp-dir | path join "cb")
       }
 
       if $nu.os-info.name == "linux" {
