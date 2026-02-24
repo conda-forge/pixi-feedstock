@@ -5,7 +5,7 @@
 
 [workspace]
 name = "pixi-feedstock"
-version = "3.54.1"  # conda-smithy version used to generate this file
+version = "3.54.2"  # conda-smithy version used to generate this file
 description = "Pixi configuration for conda-forge/pixi-feedstock"
 authors = ["@conda-forge/pixi"]
 channels = ["conda-forge"]
@@ -35,12 +35,6 @@ description = "Build pixi-feedstock with variant linux_aarch64_ directly (withou
 [tasks."inspect-linux_aarch64_"]
 cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_aarch64_.yaml"
 description = "List contents of pixi-feedstock packages built for variant linux_aarch64_"
-[tasks."build-linux_ppc64le_"]
-cmd = "rattler-build build --recipe recipe -m .ci_support/linux_ppc64le_.yaml"
-description = "Build pixi-feedstock with variant linux_ppc64le_ directly (without setup scripts)"
-[tasks."inspect-linux_ppc64le_"]
-cmd = "inspect_artifacts --recipe-dir recipe -m .ci_support/linux_ppc64le_.yaml"
-description = "List contents of pixi-feedstock packages built for variant linux_ppc64le_"
 [tasks."build-osx_64_"]
 cmd = "rattler-build build --recipe recipe -m .ci_support/osx_64_.yaml"
 description = "Build pixi-feedstock with variant osx_64_ directly (without setup scripts)"

@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pixi
-  version: "0.63.0"
+  version: "0.64.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 795d6f48279d800507dd8a54f7c6c214c72e8ec3fbfd7bd41a0c935c775a7fed
+  sha256: 854448c9736366c32103536bc9220543a65bdae6850ab9250fb39a9fb0897160
 
 build:
   number: 0
@@ -18,16 +18,24 @@ build:
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
-      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" or target_platform == "linux-ppc64le" }}
+      JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
+
+      if $nu.os-info.name == "windows" {
+        # Avoid long path issues
+        let drive = ($env.SRC_DIR | path split | first)  # e.g. "D:"
+        $env.CARGO_TARGET_DIR = $"($drive)\\cb"  # D:\cb
+        $env.CARGO_HOME = $"($drive)\\ch"        # D:\ch
+      }
+
       if $nu.os-info.name == "linux" {
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
-      cargo install --locked --root $env.PREFIX --no-track --path crates/pixi
+      cargo auditable install --locked --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
 
