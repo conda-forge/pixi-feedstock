@@ -26,9 +26,9 @@ build:
 
       if $nu.os-info.name == "windows" {
         # Avoid long path issues
-        let drive = $env.SystemDrive  # e.g. "C:"
-        $env.CARGO_TARGET_DIR = ($drive | path join "cb")  # C:\cb
-        $env.CARGO_HOME = ($drive | path join "ch")        # C:\ch
+        let drive = ($env.SRC_DIR | path split | first)  # e.g. "D:"
+        $env.CARGO_TARGET_DIR = $"($drive)\\cb"  # D:\cb
+        $env.CARGO_HOME = $"($drive)\\ch"        # D:\ch
       }
 
       if $nu.os-info.name == "linux" {
