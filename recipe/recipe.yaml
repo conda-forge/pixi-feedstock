@@ -57,8 +57,6 @@ requirements:
   host:
     - if: linux
       then: openssl
-    - if: win
-      then: libgit2
 
 tests:
   - script:
