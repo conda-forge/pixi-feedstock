@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pixi
-  version: "0.65.0"
+  version: "0.66.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 03527008a7ba0e76698b8f8870fdb3519e599c424fa718e55f1222382a5f2c6d
+  sha256: 37be89e8b089b78b5f65356688258771f34434c545bcccaafde7948d59c2bccd
 
 build:
   number: 0
@@ -20,6 +20,9 @@ build:
       # This env var  specifies the base 2 log of the allocator page size
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
+      # Use cmake to build aws-lc-sys, because conda's CFLAGS inject -O2 which
+      # overrides the -O0 required by jitterentropy-base.c, causing a build failure.
+      AWS_LC_SYS_CMAKE_BUILDER: "1"
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
