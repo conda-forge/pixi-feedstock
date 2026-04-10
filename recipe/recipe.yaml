@@ -22,6 +22,7 @@ build:
       # Use cmake to build aws-lc-sys, because conda's CFLAGS inject -O2 which
       # overrides the -O0 required by jitterentropy-base.c, causing a build failure.
       AWS_LC_SYS_CMAKE_BUILDER: "1"
+      ZSTD_SYS_USE_PKG_CONFIG: "1"
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
@@ -58,6 +59,9 @@ requirements:
         - ld64
         - llvmdev
   host:
+    - bzip2
+    - liblzma-devel
+    - zstd
     - if: linux
       then: openssl
     - if: win
