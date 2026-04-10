@@ -2,8 +2,6 @@ MACOSX_DEPLOYMENT_TARGET:
 - '11.0'
 MACOSX_SDK_VERSION:
 - '11.0'
-bzip2:
-- '1'
 c_compiler:
 - clang
 c_compiler_version:
@@ -20,8 +18,6 @@ cxx_compiler:
 - clangxx
 cxx_compiler_version:
 - '19'
-liblzma_devel:
-- '5'
 macos_machine:
 - x86_64-apple-darwin13.4.0
 rust_compiler:
@@ -31,5 +27,3 @@ target_platform:
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
-zstd:
-- '1.5'
