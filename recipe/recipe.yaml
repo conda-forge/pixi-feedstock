@@ -23,6 +23,8 @@ build:
       # overrides the -O0 required by jitterentropy-base.c, causing a build failure.
       AWS_LC_SYS_CMAKE_BUILDER: "1"
       ZSTD_SYS_USE_PKG_CONFIG: "1"
+      PKG_CONFIG_SYSROOT_DIR: ${{ "$PREFIX" if unix else "%PREFIX%" }}
+      PKG_CONFIG_PATH: ${{ "$PREFIX/lib/pkgconfig" if unix else "%PREFIX%\\Library\\lib\\pkgconfig" }}
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
