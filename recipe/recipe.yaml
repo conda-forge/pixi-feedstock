@@ -54,7 +54,9 @@ requirements:
     - if: unix
       then: make
     - if: osx
-      then: llvmdev
+      then:
+        - ld64
+        - llvmdev
   host:
     - if: linux
       then: openssl
