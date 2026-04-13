@@ -1,20 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
 schema_version: 1
 
 context:
-  name: pixi
-  version: "0.66.0"
+  version: "0.67.0"
 
 package:
-  name: ${{ name|lower }}
+  name: pixi
   version: ${{ version }}
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 37be89e8b089b78b5f65356688258771f34434c545bcccaafde7948d59c2bccd
+  sha256: c9312334495efae40938084355012fa3320d18299c124e5add0de67157c7dc3d
 
 build:
   number: 0
-
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
@@ -41,22 +40,21 @@ build:
       cargo auditable install --locked --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
-
-
 requirements:
   build:
-    - nushell
-    - ${{ compiler('rust') }}
-    - cargo-bundle-licenses
-    # to compile the libsolv parts
-    - ${{ compiler('c') }}
+    - ${{ compiler("c") }}
+    - ${{ compiler("cxx") }}
+    - ${{ compiler("rust") }}
     - ${{ stdlib("c") }}
-    - ${{ compiler('cxx') }}
-    - pkg-config
-    - cmake
     - cargo-auditable
+    - cargo-bundle-licenses
+    - cmake
+    - nushell
+    - pkg-config
     - if: unix
       then: make
+    - if: osx
+      then: ld64
   host:
     - if: linux
       then: openssl
@@ -87,7 +85,8 @@ about:
   license_file:
     - LICENSE
     - THIRDPARTY.yml
-  homepage: https://github.com/prefix-dev/pixi
+  homepage: https://pixi.prefix.dev
+  repository: https://github.com/prefix-dev/pixi
 
 extra:
   recipe-maintainers:

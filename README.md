@@ -3,11 +3,13 @@ About pixi-feedstock
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/pixi-feedstock/blob/main/LICENSE.txt)
 
-Home: https://github.com/prefix-dev/pixi
+Home: https://pixi.prefix.dev/
 
 Package license: BSD-3-Clause
 
 Summary: pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
+
+Development: https://github.com/prefix-dev/pixi
 
 pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
 
