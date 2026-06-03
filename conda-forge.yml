@@ -1,5 +1,6 @@
 build_platform:
   osx_64: osx_arm64
+  win_arm64: win_64
 provider:
   osx_arm64: default
   linux_aarch64: default
