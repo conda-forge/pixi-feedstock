@@ -13,7 +13,7 @@ source:
   sha256: dc3130de2604d96e26395d43b0ef18f3fd63c926bf44d4d8628f1bb8d7df77a7
 
 build:
-  number: 1
+  number: 2
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
@@ -40,6 +40,17 @@ build:
       cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
+      if $nu.os-info.name != "windows" {
+        # Generate shell completions for unix shells
+        let pixi = $"($env.PREFIX)/bin/pixi"
+        mkdir $"($env.PREFIX)/share/bash-completion/completions"
+        mkdir $"($env.PREFIX)/share/zsh/site-functions"
+        mkdir $"($env.PREFIX)/share/fish/vendor_completions.d"
+        ^$pixi completion --shell bash | save --force $"($env.PREFIX)/share/bash-completion/completions/pixi"
+        ^$pixi completion --shell zsh | save --force $"($env.PREFIX)/share/zsh/site-functions/_pixi"
+        ^$pixi completion --shell fish | save --force $"($env.PREFIX)/share/fish/vendor_completions.d/pixi.fish"
+      }
+
 requirements:
   build:
     - ${{ compiler("c") }}
@@ -64,6 +75,16 @@ requirements:
 tests:
   - script:
       - pixi --help
+  - package_contents:
+      strict: true
+      bin:
+        - pixi
+      files:
+        - if: unix
+          then:
+            - share/bash-completion/completions/pixi
+            - share/zsh/site-functions/_pixi
+            - share/fish/vendor_completions.d/pixi.fish
 
 about:
   summary: pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
