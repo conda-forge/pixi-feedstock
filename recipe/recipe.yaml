@@ -2,7 +2,7 @@
 schema_version: 1
 
 context:
-  version: "0.72.0"
+  version: "0.72.1"
 
 package:
   name: pixi
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: ebd5b62581cc4a9e16dd7bb41f3e5e83a99e53676788a388463f8ce5a3e58e81
+  sha256: a7e9f58c948d872d581b6466b9f9b439bc6363fffb3a7eefe3c84d117b713405
 
 build:
   number: 0
