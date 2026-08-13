@@ -13,7 +13,7 @@ source:
   sha256: 09c0a8b9b7fdadab7b38bb6190d1e72b061a565c03e16177e2053197de4df607
 
 build:
-  number: 0
+  number: 1
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
