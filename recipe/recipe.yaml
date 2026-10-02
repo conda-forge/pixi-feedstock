@@ -111,6 +111,7 @@ about:
 
 extra:
   recipe-maintainers:
+    - lucascolley
     - wolfv
     - baszalmstra
     - tdejager
