@@ -9,11 +9,19 @@ package:
   version: ${{ version }}
 
 source:
-  url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 6de3f263642615b772400140562ca0a79db2ef489df2efd2499611225481ac24
+  - url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
+    sha256: 6de3f263642615b772400140562ca0a79db2ef489df2efd2499611225481ac24
+  # The v0.81.0 tarball predates the upstream PGO build script and its training
+  # workspace. Remove these two sources once the release tarball contains them.
+  - url: https://raw.githubusercontent.com/prefix-dev/pixi/f1d69de290e8a8abde5397ff27b42b6c192a647b/scripts/build_pgo.py
+    sha256: 0caa63a8637f8081cdc58143efa713bbdb0f5cd7d80004e8053d44e9a308b657
+    target_directory: scripts
+  - url: https://raw.githubusercontent.com/prefix-dev/pixi/f1d69de290e8a8abde5397ff27b42b6c192a647b/scripts/pgo/pixi.toml
+    sha256: 4944ee3da28e3e052470b80b6eac1d79aac913bde14cbb59b35df11b98734f4e
+    target_directory: scripts/pgo
 
 build:
-  number: 0
+  number: 1
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
@@ -37,7 +45,16 @@ build:
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
-      cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
+
+      # PGO needs to run the instrumented binary, so the script falls back to a
+      # regular release build when cross-compiling.
+      let executable = if $nu.os-info.name == "windows" { "pixi.exe" } else { "pixi" }
+      (^python ($env.SRC_DIR | path join scripts build_pgo.py)
+        --target $env.CARGO_BUILD_TARGET
+        --no-default-features --features native-tls
+        --auditable
+        --pgo
+        --output ($env.PREFIX | path join bin $executable))
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
       if $nu.os-info.name != "windows" {
@@ -61,6 +78,8 @@ requirements:
     - cargo-bundle-licenses
     - cmake
     - nushell
+    # A version constraint keeps python out of the build variants.
+    - python >=3.10
     - pkg-config
     - if: unix
       then: make
