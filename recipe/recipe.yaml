@@ -2,7 +2,7 @@
 schema_version: 1
 
 context:
-  version: "0.81.0"
+  version: "0.82.0"
 
 package:
   name: pixi
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 6de3f263642615b772400140562ca0a79db2ef489df2efd2499611225481ac24
+  sha256: efbd86f9983490d5636035d9b26994ad3df0d71617e6046eb8e9d5c9742e4166
 
 build:
   number: 0
@@ -19,9 +19,6 @@ build:
       # This env var  specifies the base 2 log of the allocator page size
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      # Use cmake to build aws-lc-sys, because conda's CFLAGS inject -O2 which
-      # overrides the -O0 required by jitterentropy-base.c, causing a build failure.
-      AWS_LC_SYS_CMAKE_BUILDER: "1"
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
@@ -31,12 +28,34 @@ build:
         let drive = ($env.SRC_DIR | path split | first)  # e.g. "D:"
         $env.CARGO_TARGET_DIR = $"($drive)\\cb"  # D:\cb
         $env.CARGO_HOME = $"($drive)\\ch"        # D:\ch
+        # aws-lc-sys's default cc builder hands the win-aarch64 `.S` assembly
+        # to cl.exe, which ignores it, so linking fails on missing objects.
+        $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
       }
 
       if $nu.os-info.name == "linux" {
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
+
+      # `zstd` is a build dependency of `uv-python`, so cargo compiles the
+      # `zstd-sys` C sources for the build platform too. cc-rs accumulates
+      # the flags of `CFLAGS` into both compiles, which makes the build platform
+      # compiler choke on the target's `-march=core2` / `-mabi=lp64d`. Pass them
+      # via `TARGET_CFLAGS` instead, which cc-rs only applies to the target compile.
+      if ${{ "true" if unix and build_platform != target_platform else "false" }} {
+        $env.TARGET_CFLAGS = $env.CFLAGS
+        hide-env CFLAGS
+      }
+
+      # On win-arm64, `CC=cl.exe` resolves to the ARM64-targeting cl.exe, so the
+      # build platform `zstd-sys` objects come out ARM64 and the x64 build script
+      # fails to link. cc-rs ignores `CC_FOR_BUILD`, so forward it explicitly.
+      if ${{ "true" if win and build_platform != target_platform else "false" }} {
+        $env.CC_x86_64_pc_windows_msvc = $env.CC_FOR_BUILD
+        $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
+      }
+
       cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
