@@ -19,9 +19,6 @@ build:
       # This env var  specifies the base 2 log of the allocator page size
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      # Use cmake to build aws-lc-sys, because conda's CFLAGS inject -O2 which
-      # overrides the -O0 required by jitterentropy-base.c, causing a build failure.
-      AWS_LC_SYS_CMAKE_BUILDER: "1"
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
@@ -37,6 +34,17 @@ build:
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
+
+      # `zstd` is a build dependency of `uv-python`, so cargo compiles the
+      # `zstd-sys` C sources for the build platform too. cc-rs accumulates
+      # the flags of `CFLAGS` into both compiles, which makes the build platform
+      # compiler choke on the target's `-march=core2` / `-mabi=lp64d`. Pass them
+      # via `TARGET_CFLAGS` instead, which cc-rs only applies to the target compile.
+      if ${{ "true" if unix and build_platform != target_platform else "false" }} {
+        $env.TARGET_CFLAGS = $env.CFLAGS
+        hide-env CFLAGS
+      }
+
       cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
