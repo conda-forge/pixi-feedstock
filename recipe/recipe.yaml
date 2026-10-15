@@ -48,6 +48,14 @@ build:
         hide-env CFLAGS
       }
 
+      # On win-arm64, `CC=cl.exe` resolves to the ARM64-targeting cl.exe, so the
+      # build platform `zstd-sys` objects come out ARM64 and the x64 build script
+      # fails to link. cc-rs ignores `CC_FOR_BUILD`, so forward it explicitly.
+      if ${{ "true" if win and build_platform != target_platform else "false" }} {
+        $env.CC_x86_64_pc_windows_msvc = $env.CC_FOR_BUILD
+        $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
+      }
+
       cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
