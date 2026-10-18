@@ -28,9 +28,6 @@ build:
         let drive = ($env.SRC_DIR | path split | first)  # e.g. "D:"
         $env.CARGO_TARGET_DIR = $"($drive)\\cb"  # D:\cb
         $env.CARGO_HOME = $"($drive)\\ch"        # D:\ch
-        # aws-lc-sys's default cc builder hands the win-aarch64 `.S` assembly
-        # to cl.exe, which ignores it, so linking fails on missing objects.
-        $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
       }
 
       if $nu.os-info.name == "linux" {
@@ -54,6 +51,15 @@ build:
       if ${{ "true" if win and build_platform != target_platform else "false" }} {
         $env.CC_x86_64_pc_windows_msvc = $env.CC_FOR_BUILD
         $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
+      }
+
+      # ring always compiles its C code with clang on win-arm64, and cc-rs forwards
+      # rustc's `-Cprofile-generate`/`-Cprofile-use` to clang. The instrumented C
+      # objects then require clang's profile runtime, which isn't installed, so the
+      # link fails on `clang_rt.profile-aarch64.lib`. This variable is read only by
+      # the clang driver (cl.exe ignores it) and turns the profile flags back off.
+      if ${{ "true" if target_platform == "win-arm64" else "false" }} {
+        $env.CCC_OVERRIDE_OPTIONS = "# +-fno-profile-generate +-fno-profile-use"
       }
 
       # PGO needs to run the instrumented binary, so the script falls back to a
