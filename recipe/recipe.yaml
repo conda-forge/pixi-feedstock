@@ -53,13 +53,21 @@ build:
         $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
       }
 
-      # ring always compiles its C code with clang on win-arm64, and cc-rs forwards
-      # rustc's `-Cprofile-generate`/`-Cprofile-use` to clang. The instrumented C
-      # objects then require clang's profile runtime, which isn't installed, so the
-      # link fails on `clang_rt.profile-aarch64.lib`. This variable is read only by
-      # the clang driver (cl.exe ignores it) and turns the profile flags back off.
       if ${{ "true" if target_platform == "win-arm64" else "false" }} {
-        $env.CCC_OVERRIDE_OPTIONS = "# +-fno-profile-generate +-fno-profile-use"
+        # aws-lc-sys's cc builder only switches to clang-cl on win-arm64 when `CC`
+        # is unset, but the activation sets `CC=cl.exe`. cl.exe ignores the
+        # `.S` assembly, so linking fails on missing objects. The cmake builder
+        # assembles them with clang-cl.
+        $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
+
+        # ring always compiles its C code with clang here, and cc-rs forwards
+        # rustc's `-Cprofile-generate`/`-Cprofile-use` to clang. The instrumented
+        # C objects then require clang's profile runtime, which isn't installed,
+        # so the link fails on `clang_rt.profile-aarch64.lib`. Only the clang
+        # driver reads this variable; it rewrites the forwarded flags to their
+        # `-fno-` forms. Appending those instead would break the clang-cl
+        # compiles in aws-lc's `-WX` cmake build, which rejects them as unknown.
+        $env.CCC_OVERRIDE_OPTIONS = "# s/^-fprofile-generate=.*/-fno-profile-generate/ s/^-fprofile-use=.*/-fno-profile-use/"
       }
 
       # PGO needs to run the instrumented binary, so the script falls back to a
