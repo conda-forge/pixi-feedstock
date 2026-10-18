@@ -53,31 +53,25 @@ build:
         $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
       }
 
+      # aws-lc-sys's cc builder only switches to clang-cl on win-arm64 when `CC`
+      # is unset, but the activation sets `CC=cl.exe`. cl.exe ignores the `.S`
+      # assembly, so linking fails on missing objects. The cmake builder
+      # assembles them with clang-cl.
       if ${{ "true" if target_platform == "win-arm64" else "false" }} {
-        # aws-lc-sys's cc builder only switches to clang-cl on win-arm64 when `CC`
-        # is unset, but the activation sets `CC=cl.exe`. cl.exe ignores the
-        # `.S` assembly, so linking fails on missing objects. The cmake builder
-        # assembles them with clang-cl.
         $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
-
-        # ring always compiles its C code with clang here, and cc-rs forwards
-        # rustc's `-Cprofile-generate`/`-Cprofile-use` to clang. The instrumented
-        # C objects then require clang's profile runtime, which isn't installed,
-        # so the link fails on `clang_rt.profile-aarch64.lib`. Only the clang
-        # driver reads this variable; it rewrites the forwarded flags to their
-        # `-fno-` forms. Appending those instead would break the clang-cl
-        # compiles in aws-lc's `-WX` cmake build, which rejects them as unknown.
-        $env.CCC_OVERRIDE_OPTIONS = "# s/^-fprofile-generate=.*/-fno-profile-generate/ s/^-fprofile-use=.*/-fno-profile-use/"
       }
 
       # PGO needs to run the instrumented binary, so the script falls back to a
-      # regular release build when cross-compiling.
+      # regular release build when cross-compiling. win-arm64 skips PGO because
+      # instrumented builds are broken on that target:
+      # https://github.com/rust-lang/rust/issues/156675
+      let pgo = if ${{ "false" if target_platform == "win-arm64" else "true" }} { ["--pgo"] } else { [] }
       let executable = if $nu.os-info.name == "windows" { "pixi.exe" } else { "pixi" }
       (^python ($env.SRC_DIR | path join scripts build_pgo.py)
         --target $env.CARGO_BUILD_TARGET
         --no-default-features --features native-tls
         --auditable
-        --pgo
+        ...$pgo
         --output ($env.PREFIX | path join bin $executable))
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
