@@ -13,7 +13,7 @@ source:
   sha256: efbd86f9983490d5636035d9b26994ad3df0d71617e6046eb8e9d5c9742e4166
 
 build:
-  number: 0
+  number: 1
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
@@ -56,7 +56,15 @@ build:
         $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
       }
 
-      cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
+      # PGO needs to run the instrumented binary, so the script falls back to a
+      # regular release build when cross-compiling.
+      let executable = if $nu.os-info.name == "windows" { "pixi.exe" } else { "pixi" }
+      (^python ($env.SRC_DIR | path join scripts build_pgo.py)
+        --target $env.CARGO_BUILD_TARGET
+        --no-default-features --features native-tls
+        --auditable
+        --pgo
+        --output ($env.PREFIX | path join bin $executable))
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
       if $nu.os-info.name != "windows" {
@@ -80,6 +88,8 @@ requirements:
     - cargo-bundle-licenses
     - cmake
     - nushell
+    # A version constraint keeps python out of the build variants.
+    - python >=3.10
     - pkg-config
     - if: unix
       then: make
