@@ -13,7 +13,7 @@ source:
   sha256: efbd86f9983490d5636035d9b26994ad3df0d71617e6046eb8e9d5c9742e4166
 
 build:
-  number: 1
+  number: 2
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
@@ -28,9 +28,6 @@ build:
         let drive = ($env.SRC_DIR | path split | first)  # e.g. "D:"
         $env.CARGO_TARGET_DIR = $"($drive)\\cb"  # D:\cb
         $env.CARGO_HOME = $"($drive)\\ch"        # D:\ch
-        # aws-lc-sys's default cc builder hands the win-aarch64 `.S` assembly
-        # to cl.exe, which ignores it, so linking fails on missing objects.
-        $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
       }
 
       if $nu.os-info.name == "linux" {
@@ -56,14 +53,25 @@ build:
         $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
       }
 
+      # aws-lc-sys's cc builder only switches to clang-cl on win-arm64 when `CC`
+      # is unset, but the activation sets `CC=cl.exe`. cl.exe ignores the `.S`
+      # assembly, so linking fails on missing objects. The cmake builder
+      # assembles them with clang-cl.
+      if ${{ "true" if target_platform == "win-arm64" else "false" }} {
+        $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
+      }
+
       # PGO needs to run the instrumented binary, so the script falls back to a
-      # regular release build when cross-compiling.
+      # regular release build when cross-compiling. win-arm64 skips PGO because
+      # instrumented builds are broken on that target:
+      # https://github.com/rust-lang/rust/issues/156675
+      let pgo = if ${{ "false" if target_platform == "win-arm64" else "true" }} { ["--pgo"] } else { [] }
       let executable = if $nu.os-info.name == "windows" { "pixi.exe" } else { "pixi" }
       (^python ($env.SRC_DIR | path join scripts build_pgo.py)
         --target $env.CARGO_BUILD_TARGET
         --no-default-features --features native-tls
         --auditable
-        --pgo
+        ...$pgo
         --output ($env.PREFIX | path join bin $executable))
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
 
