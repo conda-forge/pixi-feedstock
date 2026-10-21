@@ -35,6 +35,8 @@ build:
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
 
+      $env.RUSTFLAGS = $"($env.RUSTFLAGS) -C relocation-model=pic"
+
       # `zstd` is a build dependency of `uv-python`, so cargo compiles the
       # `zstd-sys` C sources for the build platform too. cc-rs accumulates
       # the flags of `CFLAGS` into both compiles, which makes the build platform
@@ -57,7 +59,7 @@ build:
       # is unset, but the activation sets `CC=cl.exe`. cl.exe ignores the `.S`
       # assembly, so linking fails on missing objects. The cmake builder
       # assembles them with clang-cl.
-      if ${{ "true" if target_platform == "win-arm64" or target_platform == "linux-ppc64le" else "false" }} {
+      if ${{ "true" if target_platform == "win-arm64" else "false" }} {
         $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
       }
 
