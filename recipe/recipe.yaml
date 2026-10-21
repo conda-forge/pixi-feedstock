@@ -21,8 +21,6 @@ build:
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
-      print $env
-
       $env.OPENSSL_DIR = $env.PREFIX
 
       if $nu.os-info.name == "windows" {
@@ -36,8 +34,6 @@ build:
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
-
-      $env.RUSTFLAGS = "-C relocation-model=pic"
 
       # `zstd` is a build dependency of `uv-python`, so cargo compiles the
       # `zstd-sys` C sources for the build platform too. cc-rs accumulates
@@ -65,7 +61,7 @@ build:
         $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
       }
 
-      print $env
+      $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
 
       # PGO needs to run the instrumented binary, so the script falls back to a
       # regular release build when cross-compiling. win-arm64 skips PGO because
