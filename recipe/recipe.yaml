@@ -62,7 +62,7 @@ build:
       }
 
       $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_LINKER = $env.CC
-      $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS = "-C link-arg=-fuse-ld=bfd"
+      $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS = "-C link-arg=-fuse-ld=bfd -C link-arg=-Wl,--no-relax"
 
       # PGO needs to run the instrumented binary, so the script falls back to a
       # regular release build when cross-compiling. win-arm64 skips PGO because
