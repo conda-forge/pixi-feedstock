@@ -2,7 +2,7 @@
 schema_version: 1
 
 context:
-  version: "0.70.1"
+  version: "0.82.1"
 
 package:
   name: pixi
@@ -10,18 +10,15 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: dc3130de2604d96e26395d43b0ef18f3fd63c926bf44d4d8628f1bb8d7df77a7
+  sha256: 1ce72cd1f93f336ecd767d8aed94ee0662248de8cb973fdbac8377214ea021d7
 
 build:
-  number: 1
+  number: 0
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
       JEMALLOC_SYS_WITH_LG_PAGE: ${{ "16" if target_platform == "linux-aarch64" }} # or target_platform == "linux-ppc64le" }}
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      # Use cmake to build aws-lc-sys, because conda's CFLAGS inject -O2 which
-      # overrides the -O0 required by jitterentropy-base.c, causing a build failure.
-      AWS_LC_SYS_CMAKE_BUILDER: "1"
     interpreter: nu
     content: |
       $env.OPENSSL_DIR = $env.PREFIX
@@ -37,8 +34,57 @@ build:
         # This flag is needed for tree-sitter on linux
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
-      cargo auditable install --locked --no-default-features --features native-tls --root $env.PREFIX --no-track --path crates/pixi --bin pixi
+
+      # `zstd` is a build dependency of `uv-python`, so cargo compiles the
+      # `zstd-sys` C sources for the build platform too. cc-rs accumulates
+      # the flags of `CFLAGS` into both compiles, which makes the build platform
+      # compiler choke on the target's `-march=core2` / `-mabi=lp64d`. Pass them
+      # via `TARGET_CFLAGS` instead, which cc-rs only applies to the target compile.
+      if ${{ "true" if unix and build_platform != target_platform else "false" }} {
+        $env.TARGET_CFLAGS = $env.CFLAGS
+        hide-env CFLAGS
+      }
+
+      # On win-arm64, `CC=cl.exe` resolves to the ARM64-targeting cl.exe, so the
+      # build platform `zstd-sys` objects come out ARM64 and the x64 build script
+      # fails to link. cc-rs ignores `CC_FOR_BUILD`, so forward it explicitly.
+      if ${{ "true" if win and build_platform != target_platform else "false" }} {
+        $env.CC_x86_64_pc_windows_msvc = $env.CC_FOR_BUILD
+        $env.CXX_x86_64_pc_windows_msvc = $env.CXX_FOR_BUILD
+      }
+
+      # aws-lc-sys's cc builder only switches to clang-cl on win-arm64 when `CC`
+      # is unset, but the activation sets `CC=cl.exe`. cl.exe ignores the `.S`
+      # assembly, so linking fails on missing objects. The cmake builder
+      # assembles them with clang-cl.
+      if ${{ "true" if target_platform == "win-arm64" else "false" }} {
+        $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
+      }
+
+      # PGO needs to run the instrumented binary, so the script falls back to a
+      # regular release build when cross-compiling. win-arm64 skips PGO because
+      # instrumented builds are broken on that target:
+      # https://github.com/rust-lang/rust/issues/156675
+      let pgo = if ${{ "false" if target_platform == "win-arm64" else "true" }} { ["--pgo"] } else { [] }
+      let executable = if $nu.os-info.name == "windows" { "pixi.exe" } else { "pixi" }
+      (^python ($env.SRC_DIR | path join scripts build_pgo.py)
+        --target $env.CARGO_BUILD_TARGET
+        --no-default-features --features native-tls
+        --auditable
+        ...$pgo
+        --output ($env.PREFIX | path join bin $executable))
       cargo-bundle-licenses --format yaml --output $"($env.SRC_DIR)/THIRDPARTY.yml"
+
+      if $nu.os-info.name != "windows" {
+        # Generate shell completions for unix shells
+        let pixi = $"($env.PREFIX)/bin/pixi"
+        mkdir $"($env.PREFIX)/share/bash-completion/completions"
+        mkdir $"($env.PREFIX)/share/zsh/site-functions"
+        mkdir $"($env.PREFIX)/share/fish/vendor_completions.d"
+        ^$pixi completion --shell bash | save --force $"($env.PREFIX)/share/bash-completion/completions/pixi"
+        ^$pixi completion --shell zsh | save --force $"($env.PREFIX)/share/zsh/site-functions/_pixi"
+        ^$pixi completion --shell fish | save --force $"($env.PREFIX)/share/fish/vendor_completions.d/pixi.fish"
+      }
 
 requirements:
   build:
@@ -50,6 +96,8 @@ requirements:
     - cargo-bundle-licenses
     - cmake
     - nushell
+    # A version constraint keeps python out of the build variants.
+    - python >=3.10
     - pkg-config
     - if: unix
       then: make
@@ -64,6 +112,16 @@ requirements:
 tests:
   - script:
       - pixi --help
+  - package_contents:
+      strict: true
+      bin:
+        - pixi
+      files:
+        - if: unix
+          then:
+            - share/bash-completion/completions/pixi
+            - share/zsh/site-functions/_pixi
+            - share/fish/vendor_completions.d/pixi.fish
 
 about:
   summary: pixi is a cross-platform, multi-language package manager and workflow tool build on the shoulders of the conda ecosystem.
@@ -90,6 +148,7 @@ about:
 
 extra:
   recipe-maintainers:
+    - lucascolley
     - wolfv
     - baszalmstra
     - tdejager
