@@ -21,6 +21,8 @@ build:
       CARGO_PROFILE_RELEASE_STRIP: symbols
     interpreter: nu
     content: |
+      $env
+
       $env.OPENSSL_DIR = $env.PREFIX
 
       if $nu.os-info.name == "windows" {
@@ -62,6 +64,8 @@ build:
       if ${{ "true" if target_platform == "win-arm64" else "false" }} {
         $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
       }
+
+      $env
 
       # PGO needs to run the instrumented binary, so the script falls back to a
       # regular release build when cross-compiling. win-arm64 skips PGO because
