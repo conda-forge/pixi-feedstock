@@ -35,7 +35,7 @@ build:
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
 
-      $env.RUSTFLAGS = $"($env.RUSTFLAGS) -C relocation-model=pic"
+      $env.RUSTFLAGS = "-C relocation-model=pic"
 
       # `zstd` is a build dependency of `uv-python`, so cargo compiles the
       # `zstd-sys` C sources for the build platform too. cc-rs accumulates
