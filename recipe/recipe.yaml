@@ -35,6 +35,13 @@ build:
         $env.CFLAGS = $"($env.CFLAGS) -D_BSD_SOURCE"
       }
 
+      # aws-lc-sys destructors hit "relocation truncated to fit: R_PPC64_REL24"
+      # when GCC reorders them into .text.exit. Disable the reordering, as
+      # conda-forge/py-rattler-feedstock does: https://github.com/conda-forge/py-rattler-feedstock/commit/523a93bb5
+      if ${{ "true" if target_platform == "linux-ppc64le" else "false" }} {
+        $env.CFLAGS = $"($env.CFLAGS) -fno-reorder-functions"
+      }
+
       # `zstd` is a build dependency of `uv-python`, so cargo compiles the
       # `zstd-sys` C sources for the build platform too. cc-rs accumulates
       # the flags of `CFLAGS` into both compiles, which makes the build platform
@@ -62,7 +69,11 @@ build:
       }
 
       $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_LINKER = $env.CC
-      $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS = "-C link-arg=-fuse-ld=bfd -C link-arg=-Wl,--no-relax"
+      # Target-specific RUSTFLAGS replace CARGO_BUILD_RUSTFLAGS, which the rust
+      # activation script fills with -rpath to $PREFIX/lib. Inherit it so the
+      # binary finds the host libssl. Use BFD: rust-lld rejects the PPC64 PLT
+      # relocations in the aws-lc-sys objects.
+      $env.CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS = $"($env.CARGO_BUILD_RUSTFLAGS? | default '') -C link-arg=-fuse-ld=bfd"
 
       # PGO needs to run the instrumented binary, so the script falls back to a
       # regular release build when cross-compiling. win-arm64 skips PGO because
