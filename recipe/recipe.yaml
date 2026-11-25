@@ -2,7 +2,7 @@
 schema_version: 1
 
 context:
-  version: "0.84.2"
+  version: "0.85.0"
 
 package:
   name: pixi
@@ -10,10 +10,10 @@ package:
 
 source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 45bb2eb57c8b499962c2ed9a1683b3f120624318bcda4c4511fbd07a887a6ee6
+  sha256: e721f21c5e3c5cf6c608392a55b2d65c7d625052d77d233b67452deb35799bf2
 
 build:
-  number: 1
+  number: 0
   script:
     env:
       # This env var  specifies the base 2 log of the allocator page size
