@@ -12,6 +12,7 @@ source:
   url: https://github.com/prefix-dev/pixi/archive/refs/tags/v${{ version }}.tar.gz
   sha256: e721f21c5e3c5cf6c608392a55b2d65c7d625052d77d233b67452deb35799bf2
   patches:
+    # TODO: Remove this patch with the next Pixi release that includes the Linux ARM64 PGO fix.
     - pgo-linux-aarch64.patch
 
 build:
