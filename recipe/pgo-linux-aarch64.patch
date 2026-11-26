@@ -1,0 +1,17 @@
+From: conda-forge pixi maintainers
+Subject: Include Linux ARM64 in PGO training
+
+The feedstock trains natively on Linux ARM64, unlike upstream's
+cross-compiled release. shell-hook --as-is requires a matching platform.
+
+--- a/scripts/pgo/pixi.toml
++++ b/scripts/pgo/pixi.toml
+@@ -1,7 +1,7 @@
+ [workspace]
+ name = "pixi-pgo-training"
+ channels = ["https://prefix.dev/conda-forge"]
+-platforms = ["linux-64", "osx-arm64", "win-64"]
++platforms = ["linux-64", "linux-aarch64", "osx-arm64", "win-64"]
+ 
+ [dependencies]
+ python = "3.13.*"
